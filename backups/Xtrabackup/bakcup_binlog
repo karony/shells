@@ -1,0 +1,39 @@
+#!/bin/bash
+# Description: backup bin logs
+# Version: 0.1.0
+# Date: 2018/01/22
+# Author: karony
+#
+
+# file to record index of binlog need to backup
+binlog_index_file=/data/backup/binlog_index
+# record index of binlog need to backup
+binlog_index=
+
+mysql_data_dir=/var/lib/mysql
+#mysql server have bin log
+mysql_binlog_index_file=$mysql_data_dir/log-bin.index
+mysql_binlog_name=log-bin
+mysql_binlog_current_index=$(tail -1 $mysql_binlog_index_file | cut -d'.' -f 3)
+
+mysql_binlog_need_backup=
+
+remote_ip=10.60.198.47
+remote_dir=/backup/zabbix-mysql/bin-logs
+
+if  [ ! -d $(dirname $binlog_index_file) ];then
+	mkdir -pv /data/backup &> /dev/null
+fi
+
+if [ ! -f $binlog_index_file ];then
+	touch $binlog_index_file
+	echo 0 > $binlog_index_file
+fi
+
+binlog_index=$(cat $binlog_index_file)
+while true; do
+	[ $binlog_index -eq $mysql_binlog_current_index ] && break
+	mysql_binlog_file_need_backup=$mysql_data_dir/${mysql_binlog_name}.$(printf "%06d\n" $binlog_index)
+	scp $mysql_binlog_file_need_backup $remote_ip:$remote_dir &>/dev/null
+	echo $((++binlog_index)) > $binlog_index_file
+done
