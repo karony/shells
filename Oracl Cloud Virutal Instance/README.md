@@ -1,4 +1,5 @@
-二.专业术语说明：
+专业术语说明：
+
 	1. 安全认证 Sercurity Credentials：
 		Console Password：文本密码，用于用户登录页面登录，密码由管理员分配。
 		API Signing Key：使用非对称密钥认证，例如使用bash远程控制时就是使用。
