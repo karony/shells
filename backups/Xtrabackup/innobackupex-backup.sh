@@ -36,7 +36,7 @@ if [ $week -eq 1 ]; then
 	backup_dir=${backup_dir_parent}/backup-$(date "+%Y-%m-%d")
 	full_backup_dir=${backup_dir}/full
 	innobackupex --defaults-file=${defaults_file} --host=${mysql_host} --user=${mysql_user} --password=${mysql_password} ${full_backup_dir} &> $backup_log
-	echo "$(date '+%Y-%m-%d'):$?" >>  $backup_status	
+	echo "$(date '+%Y-%m-%d-%H-%m-%S'):$?" >>  $backup_status	
 
 	backup_times=$(ls -l $backup_dir_parent | grep -i '^d.*backup.*' | wc -l)	
 	if [ $backup_times -ge $backup_max_times ];then
@@ -46,5 +46,5 @@ else
 	backup_dir=${backup_dir_parent}/$(ls  -lt $backup_dir_parent | grep -i '^d.*backup.*' | head -1 | grep -o 'backup.*')
 	increment_backup_dir=${backup_dir}/incr-${week}
 	echo innobackupex --defaults-file=${defaults_file} --host=${mysql_host} --user=${mysql_user} --password=${mysql_password} --incremental-basedir=${backup_dir}/full/$(ls ${backup_dir}/full | head -1) --incremental ${increment_backup_dir} 
-	echo "$(date '+%Y-%m-%d'):$?" >>  $backup_status	
+	echo "$(date '+%Y-%m-%d-%H-%m-%S'):$?" >>  $backup_status	
 fi
